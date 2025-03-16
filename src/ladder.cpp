@@ -55,7 +55,7 @@ void load_words(set<string> & word_list, const string& file_name) {
 }
 
 bool edit_distance_within(const string& str1, const string& str2, int d) {
-    int len1 = str1.length(), len2 = str2.length();
+    if (str1 == str2) return true;
 
     if (abs(len1 - len2) > d) return false;
 
@@ -67,7 +67,7 @@ bool edit_distance_within(const string& str1, const string& str2, int d) {
                 if (diff_count > d) return false;
             }
         }
-        return diff_count == d;
+        return diff_count <= d;
     }
 
     // Case 2: Check for insertion/deletion (only allow 1 edit)
