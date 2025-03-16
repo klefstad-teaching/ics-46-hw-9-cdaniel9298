@@ -57,33 +57,39 @@ void load_words(set<string> & word_list, const string& file_name) {
 }
 
 bool edit_distance_within(const string& str1, const string& str2, int d) {
-    int len1 = str1.length();
-    int len2 = str2.length();
+    int len1 = str1.length(), len2 = str2.length();
 
-    // Early exit: If length difference is greater than d, return false
     if (abs(len1 - len2) > d) return false;
 
-    vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1));
+    int diff_count = 0;
 
-    // Initialize base cases
-    for (int i = 0; i <= len1; i++) dp[i][0] = i;
-    for (int j = 0; j <= len2; j++) dp[0][j] = j;
-
-    // Compute Levenshtein distance
-    for (int i = 1; i <= len1; i++) {
-        for (int j = 1; j <= len2; j++) {
-            if (str1[i - 1] == str2[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1];  // No edit needed
-            } else {
-                dp[i][j] = 1 + min({dp[i - 1][j],    // Deletion
-                                    dp[i][j - 1],    // Insertion
-                                    dp[i - 1][j - 1] // Substitution
-                                  });
+    if (len1 == len2) {
+        for (int i = 0; i < len1; i++) {
+            if (str1[i] != str2[i]) {
+                diff_count++;
+                if (diff_count > d) return false;
             }
+        }
+        return diff_count <= d;
+    }
+
+    int i = 0, j = 0;
+    const string& longer = (len1 > len2) ? str1 : str2;
+    const string& shorter = (len1 > len2) ? str2 : str1;
+
+    while (i < longer.length() && j < shorter.length()) {
+        if (longer[i] != shorter[j]) {
+            diff_count++;
+            if (diff_count > d) return false;
+            i++;
+        } else {
+            i++; j++;
         }
     }
 
-    return dp[len1][len2] <= d;
+    diff_count += (longer.length() - i);
+
+    return diff_count <= d;
 }
 
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list) {
