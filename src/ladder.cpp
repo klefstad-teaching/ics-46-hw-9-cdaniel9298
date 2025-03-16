@@ -87,15 +87,16 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         string last_word = ladder.back();
 
         for (const string& word : word_list) {
-            if (edit_distance_within(last_word, word, 1) && visited.find(word) == visited.end()) {
-                vector<string> new_ladder = ladder;
-                new_ladder.push_back(word);
+            if (visited.find(word) != visited.end()) continue;
+            if (!edit_distance_within(last_word, word, 1)) continue;
 
-                if (word == end_word) return new_ladder;
+            vector<string> new_ladder = ladder;
+            new_ladder.push_back(word);
 
-                visited.insert(word);
-                ladder_queue.push(new_ladder);
-            }
+            if (word == end_word) return new_ladder;
+
+            visited.insert(word);
+            ladder_queue.push(new_ladder);
         }
     }
 
@@ -104,16 +105,15 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
 
 void print_word_ladder(const vector<string>& ladder) {
     if (ladder.empty()) {
-        cout << "No word ladder found." << endl; // Fix output message
+        cout << "No word ladder found.\n";
         return;
     }
 
     cout << "Word ladder found: ";
     for (size_t i = 0; i < ladder.size(); i++) {
-        cout << ladder[i];
-        if (i < ladder.size() - 1) cout << " ";
+        cout << ladder[i] << " ";
     }
-    cout << endl;
+    cout << "\n";
 }
 
 #define my_assert(e) {cout << #e << ((e) ? " passed": " failed") << endl;}
