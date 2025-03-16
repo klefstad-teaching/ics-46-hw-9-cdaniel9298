@@ -6,6 +6,7 @@ void error(string word1, string word2, string msg) {
 }
 
 bool is_adjacent(const string& word1, const string& word2) {
+    if (word1 == word2) return true;
     int len1 = word1.length();
     int len2 = word2.length();
 
@@ -103,13 +104,14 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
 
 void print_word_ladder(const vector<string>& ladder) {
     if (ladder.empty()) {
-        cout << "No word ladder found!" << endl;
+        cout << "No word ladder found." << endl; // Fix output message
         return;
     }
 
+    cout << "Word ladder found: ";
     for (size_t i = 0; i < ladder.size(); i++) {
         cout << ladder[i];
-        if (i < ladder.size() - 1) cout << " -> ";
+        if (i < ladder.size() - 1) cout << " ";
     }
     cout << endl;
 }
