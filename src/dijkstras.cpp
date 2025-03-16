@@ -53,8 +53,8 @@ vector<int> extract_shortest_path(const vector<int>& /*distances*/, const vector
 }
 
 void print_path(const vector<int>& v, int total) {
-    if (v.empty() || total == INF) {
-        cout << "\nTotal cost is INF\n";
+    if (total == INF) {
+        cout << "\nNo path found\n";
         return;
     }
 

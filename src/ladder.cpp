@@ -59,21 +59,43 @@ bool edit_distance_within(const string& str1, const string& str2, int d) {
 
     if (abs(len1 - len2) > d) return false;
 
-    vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1));
+    int diff_count = 0;
+    if (len1 == len2) {  // Case 1: Check for a single substitution
+        for (int i = 0; i < len1; i++) {
+            if (str1[i] != str2[i]) {
+                diff_count++;
+                if (diff_count > d) return false;
+            }
+        }
+        return diff_count == d;
+    }
 
-    for (int i = 0; i <= len1; i++) {
-        for (int j = 0; j <= len2; j++) {
-            if (i == 0) dp[i][j] = j;
-            else if (j == 0) dp[i][j] = i;
-            else if (str1[i - 1] == str2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
-            else dp[i][j] = 1 + min({dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]});
+    // Case 2: Check for insertion/deletion (only allow 1 edit)
+    const string& longer = (len1 > len2) ? str1 : str2;
+    const string& shorter = (len1 > len2) ? str2 : str1;
+
+    int i = 0, j = 0;
+    while (i < longer.length() && j < shorter.length()) {
+        if (longer[i] != shorter[j]) {
+            if (++diff_count > d) return false;
+            i++;
+        } else {
+            i++; j++;
         }
     }
 
-    return dp[len1][len2] <= d;
+    return true;
 }
 
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list) {
+    if (begin_word == end_word) {
+        return {};
+    }
+
+    if (word_list.find(end_word) == word_list.end()) {
+        return {};
+    }
+
     queue<vector<string>> ladder_queue;
     set<string> visited;
 
