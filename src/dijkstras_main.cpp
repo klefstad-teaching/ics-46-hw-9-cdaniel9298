@@ -36,6 +36,6 @@ void run_dijkstra(const string& filename, int source) {
 // g++ dijkstras.cpp dijkstras_main.cpp -o dijkstras_main
 // ./dijkstras_main
 int main() {
-    run_dijkstra("large.txt", 0);
+    run_dijkstra("small.txt", 0);
     return 0;
 }

@@ -1,3 +1,4 @@
+
 #include "ladder.h"
 #include <algorithm>
 
@@ -7,40 +8,42 @@ void error(string word1, string word2, string msg) {
 
 bool is_adjacent(const string& word1, const string& word2) {
     if (word1 == word2) return true;
+    int len1 = word1.length();
+    int len2 = word2.length();
 
-    size_t len1 = word1.length(), len2 = word2.length();
-
-    if (len1 == len2) {  // Case 1: Single substitution
+    // Case 1: Words are the same length, differing by exactly one letter (substitution)
+    if (len1 == len2) {
         int diff_count = 0;
-        for (size_t i = 0; i < len1; i++) {
+        for (int i = 0; i < len1; i++) {
             if (word1[i] != word2[i]) {
                 diff_count++;
                 if (diff_count > 1) return false;
             }
         }
-        return diff_count == 1;
+        return (diff_count == 1);
     }
 
-    // Case 2: One letter insert/delete
-    if (abs(static_cast<int>(len1) - static_cast<int>(len2)) != 1) return false;
+    // Case 2: One word is longer by exactly one character (insertion/deletion)
+    if (abs(len1 - len2) == 1) {
+        const string& longer = (len1 > len2) ? word1 : word2;
+        const string& shorter = (len1 > len2) ? word2 : word1;
 
-    const string& longer = (len1 > len2) ? word1 : word2;
-    const string& shorter = (len1 > len2) ? word2 : word1;
-
-    size_t i = 0, j = 0;
-    bool found_difference = false;
-    while (i < longer.length() && j < shorter.length()) {
-        if (longer[i] != shorter[j]) {
-            if (found_difference) return false;
-            found_difference = true;
-            i++;
-        } else {
-            i++; j++;
+        int i = 0, j = 0;
+        bool found_difference = false;
+        while (i < longer.length() && j < shorter.length()) {
+            if (longer[i] != shorter[j]) {
+                if (found_difference) return false;
+                found_difference = true;
+                i++;
+            } else {
+                i++; j++;
+            }
         }
+        return true;
     }
-    return true;
-}
 
+    return false;
+}
 
 void load_words(set<string> & word_list, const string& file_name) {
     ifstream file(file_name);
@@ -53,27 +56,28 @@ void load_words(set<string> & word_list, const string& file_name) {
 }
 
 bool edit_distance_within(const string& str1, const string& str2, int d) {
-    size_t len1 = str1.length();
-    size_t len2 = str2.length();
+    if(str1 == str2) return true;
+    
+    int len1 = str1.length(), len2 = str2.length();
 
-    if (abs(static_cast<int>(len1) - static_cast<int>(len2)) > d) return false;
+    if (abs(len1 - len2) > d) return false;
 
     int diff_count = 0;
-    if (len1 == len2) {  // Case 1: Single substitution
-        for (size_t i = 0; i < len1; i++) {
+    if (len1 == len2) {  // Case 1: Check for a single substitution
+        for (int i = 0; i < len1; i++) {
             if (str1[i] != str2[i]) {
                 diff_count++;
                 if (diff_count > d) return false;
             }
         }
-        return diff_count <= d;
+        return diff_count == d;
     }
 
-    // Case 2: One insertion/deletion
+    // Case 2: Check for insertion/deletion (only allow 1 edit)
     const string& longer = (len1 > len2) ? str1 : str2;
     const string& shorter = (len1 > len2) ? str2 : str1;
 
-    size_t i = 0, j = 0;
+    int i = 0, j = 0;
     while (i < longer.length() && j < shorter.length()) {
         if (longer[i] != shorter[j]) {
             if (++diff_count > d) return false;
@@ -85,7 +89,6 @@ bool edit_distance_within(const string& str1, const string& str2, int d) {
 
     return true;
 }
-
 
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list) {
     if (begin_word == end_word) {
